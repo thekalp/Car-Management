@@ -1,0 +1,203 @@
+﻿@model IEnumerable<Car_Management.Models.CarModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+
+@*<div class="row mb-3">
+        <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by Model Name">
+        </div>
+    </div>*@
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input type="text" id="searchModelName" class="form-control" placeholder="Search by Model Name">
+    </div>
+    <div class="col-md-4">
+        <input type="text" id="searchModelCode" class="form-control" placeholder="Search by Model Code">
+    </div>
+    <div class="col-md-4">
+        <button id="searchButton" class="btn btn-primary">Search</button>
+    </div>
+</div>
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Brand)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Class)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ModelName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ModelCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Features)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateOfManufacturing)
+            <a id="dateSortLink" href="#">Sort</a>
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Active)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SortOrder)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Image)
+        </th>
+        <th></th>
+    </tr>
+
+    @{
+        var reversedModel = Model.Reverse();
+    }
+
+    @foreach (var item in reversedModel)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Class)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModelName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModelCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Features)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfManufacturing)                
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SortOrder)
+            </td>
+            <td>
+                <img src="@Url.Content(item.Image)" width="150" height="150" class="img-rounded" />
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+
+@*@section scripts {
+        <script>
+            $(document).ready(function () {
+                $("#searchInput").on("keyup", function () {
+                    var searchText = $(this).val().toLowerCase();
+                    $(".table tr").each(function () {
+                        var modelName = $(this).find("td:eq(2)").text().toLowerCase();
+                        if (modelName.includes(searchText)) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                });
+            });
+        </script>
+    }*@
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            function applyFilters() {
+                var modelName = $("#searchModelName").val().toLowerCase();
+                var modelCode = $("#searchModelCode").val().toLowerCase();
+
+                $(".table tr").each(function () {
+                    var currentRow = $(this);
+                    var currentModelName = currentRow.find("td:eq(2)").text().toLowerCase();
+                    var currentModelCode = currentRow.find("td:eq(3)").text().toLowerCase();
+
+                    if (currentModelName.includes(modelName) && currentModelCode.includes(modelCode)) {
+                        currentRow.show();
+                    } else {
+                        currentRow.hide();
+                    }
+                });
+            }
+
+            $("#searchButton").on("click", function () {
+                applyFilters();
+            });
+
+            $("#searchModelName, #searchModelCode").on("keyup", function (event) {
+                if (event.key === "Enter") {
+                    applyFilters();
+                }
+            });
+        });
+        $(document).ready(function () {
+            function applyFilters() {
+                // Existing filtering logic
+
+                // Sorting logic
+                var sortByDate = $("#dateSortLink").data("sort") || "desc";
+                var rows = $(".table tbody tr").toArray();
+                rows.sort(function (a, b) {
+                    var aValue = new Date($(a).find("td:eq(7)").text()); // Index 7 corresponds to Date of Manufacturing column
+                    var bValue = new Date($(b).find("td:eq(7)").text());
+
+                    return sortByDate === "asc" ? aValue - bValue : bValue - aValue;
+                });
+
+                $(".table tbody").empty().append(rows);
+            }
+
+            $("#searchButton").on("click", function () {
+                applyFilters();
+            });
+
+            // Existing keyup event for search inputs
+
+            // Sorting link click event
+            $("#dateSortLink").on("click", function () {
+                var currentSort = $(this).data("sort") || "desc";
+                var newSort = currentSort === "desc" ? "asc" : "desc";
+                $(this).data("sort", newSort);
+                applyFilters();
+            });
+        });
+    </script>
+   
+}
